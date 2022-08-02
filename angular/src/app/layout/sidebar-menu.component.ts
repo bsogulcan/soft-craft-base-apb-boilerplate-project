@@ -127,6 +127,9 @@ export class SidebarMenuComponent extends AppComponentBase implements OnInit {
     }
 
     isMenuItemVisible(item: MenuItem): boolean {
+        if ((item.route == "/app/tenants") && (!abp.multiTenancy.isEnabled)) {
+			return false;
+		}
         if (!item.permissionNames || item.permissionNames.length == 0) {
             return true;
         }

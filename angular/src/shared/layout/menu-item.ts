@@ -4,7 +4,7 @@ export class MenuItem {
   label: string;
   route: string;
   icon: string;
-  permissionName: string;
+  permissionNames: string[];
   isActive?: boolean;
   isCollapsed?: boolean;
   children: MenuItem[];
@@ -13,13 +13,13 @@ export class MenuItem {
     label: string,
     route: string,
     icon: string,
-    permissionName: string = null,
+    permissionNames: string[] = null,
     children: MenuItem[] = null
   ) {
     this.label = label;
     this.route = route;
     this.icon = icon;
-    this.permissionName = permissionName;
+    this.permissionNames = permissionNames;
     this.children = children;
   }
 }

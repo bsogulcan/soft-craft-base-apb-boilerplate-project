@@ -1,0 +1,257 @@
+<div>
+    <p-toast [position]="dataGridOptions.toastPosition"></p-toast>
+    <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
+    <section class="content mt-2">
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-body">
+                    <p-table
+                        #dt
+                        [value]="dataGridOptions.dataSource"
+                        [rows]="dataGridOptions.pageSize"
+                        [rowsPerPageOptions]="dataGridOptions.pageSizes"
+                        [paginator]="dataGridOptions.paginator"
+                        [reorderableColumns]="dataGridOptions.allowColumnReordering"
+                        [resizableColumns]="dataGridOptions.allowColumnResizing"
+                        [autoLayout]="dataGridOptions.allowcolumnAutoWidth"
+                        [sortMode]="dataGridOptions.sortingMode"
+                        [globalFilterFields]="dataGridOptions.globalFilters"
+                        [selectionMode]="dataGridOptions.selection"
+                        responsiveLayout="scroll"
+                        [rowHover]="dataGridOptions.rowHover"
+                        [dataKey]="dataGridOptions.keyExpr"
+                        [currentPageReportTemplate]="dataGridOptions.currentPageReportTemplate"
+                        [showCurrentPageReport]="dataGridOptions.pageReport"
+                        scrollHeight="55vh"
+                        [scrollable]="dataGridOptions.scrollable"
+                        [columns]="dataGridOptions.columns"
+                        styleClass="{{ dataGridOptions.showBorders ? 'p-datatable-gridlines' : '' }}"
+                        [(selection)]="dataGridOptions.selectedItems"
+                        [loading]="loading"
+                    >
+                        <ng-template pTemplate="caption">
+                            <div class="table-header">
+                                <div class="p-d-flex p-jc-between">
+                                    <div><h2>{{ dataGridOptions.entityName| localize }}</h2></div>
+                                    <div>                    <span>
+                    <button
+                            *ngIf="dataGridOptions.createButtonIsHidden == false"
+                            [disabled]="dataGridOptions.createButtonIsActive == false || isGranted(dataGridOptions.createPermissionName) == false"
+                            pButton
+                            pRipple
+                            pTooltip="{{ 'Create' | localize }}"
+                            tooltipPosition="bottom"
+                            icon="pi pi-plus"
+                            class="p-button-success p-mr-2"
+                            (click)="openCreate()"
+                    ></button>
+                  </span>
+                                        <span>
+                    <button
+                            *ngIf="dataGridOptions.importButtonIsHidden == false"
+                            [disabled]="dataGridOptions.importButtonIsActive == false || isGranted(dataGridOptions.createPermissionName) == false"
+                            pButton
+                            pRipple
+                            pTooltip="{{ 'Import' | localize }}"
+                            tooltipPosition="bottom"
+                            icon="pi pi-upload"
+                            class="p-button-info p-mr-2"
+                    ></button>
+                  </span>
+                                        <span *ngIf="dataGridOptions.exportButtonIsActive">
+                        <button
+                                type="button"
+                                pButton
+                                pRipple
+                                icon="pi pi-file-o"
+                                (click)="dt.exportCSV()"
+                                class="p-mr-2"
+                                pTooltip="CSV"
+                                tooltipPosition="bottom"
+                        ></button>
+                      <button
+                              type="button"
+                              pButton
+                              pRipple
+                              icon="pi pi-file-excel"
+                              (click)="exportExcel()"
+                              class="p-button-success p-mr-2"
+                              pTooltip="XLS"
+                              tooltipPosition="bottom"
+                      ></button>
+                      <button
+                              type="button"
+                              pButton
+                              pRipple
+                              icon="pi pi-file-pdf"
+                              (click)="exportPdf()"
+                              class="p-button-warning p-mr-2"
+                              pTooltip="PDF"
+                              tooltipPosition="bottom"
+                      ></button>
+                    </span>
+                                        <span>
+                      <button type="button" pButton pRipple pTooltip="{{ 'ClearFilters' | localize }}"
+                              tooltipPosition="bottom" class="p-button-warning p-mr-2" icon="pi pi-filter-slash"
+                              (click)="dt.clear()"></button>
+                    </span>
+                                        <span>
+                      <button type="button" pButton pRipple pTooltip="{{ 'Refresh' | localize }}"
+                              tooltipPosition="bottom" class="p-mr-2" icon="pi pi-refresh"
+                              (click)="doRefresh()"></button>
+                    </span>
+                                        <span
+                                                *ngIf="dataGridOptions.globalFilter"
+                                                class="p-input-icon-left"
+                                        >
+                  <i class="pi pi-search"></i>
+                  <input
+                          pInputText
+                          type="text"
+                          (input)="dt.filterGlobal($event.target.value, 'contains')"
+                          placeholder="{{ 'Search' | localize }}"
+                  />
+                </span></div>
+                                </div>
+                            </div>
+                        </ng-template>
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th style="width: 3rem" *ngIf="dataGridOptions.selectionEnabled">
+                                    <p-tableHeaderCheckbox
+                                            *ngIf="dataGridOptions.selection == 'multi'"></p-tableHeaderCheckbox>
+                                </th>
+                                <th *ngFor="let currentColumn of dataGridOptions.columns"
+                                    pSortableColumn="{{ currentColumn.enableSort ? currentColumn.dataField : '' }}">
+                                    <div class="flex justify-content-between align-items-center">
+                                        {{ currentColumn.caption | localize }}
+                                        <p-sortIcon *ngIf="currentColumn.enableSort"
+                                                    [field]="currentColumn.dataField"></p-sortIcon>
+                                        <ng-container *ngIf="currentColumn.enableFilter">
+                                            <p-columnFilter *ngIf="currentColumn.dataType == 'text'"
+                                                            type="{{ currentColumn.dataType }}"
+                                                            field="{{ currentColumn.dataField }}" display="menu"
+                                                            class="ml-auto"></p-columnFilter>
+                                            <p-columnFilter *ngIf="currentColumn.dataType == 'localizeText'" type="text"
+                                                            field="{{ currentColumn.dataField }}" display="menu"
+                                                            class="ml-auto"></p-columnFilter>
+                                            <p-columnFilter *ngIf="currentColumn.dataType == 'numeric'"
+                                                            type="{{ currentColumn.dataType }}"
+                                                            field="{{ currentColumn.dataField }}" display="menu"
+                                                            class="ml-auto"></p-columnFilter>
+                                            <p-columnFilter *ngIf="currentColumn.dataType == 'boolean'"
+                                                            type="{{ currentColumn.dataType }}"
+                                                            field="{{ currentColumn.dataField }}" display="menu"
+                                                            class="ml-auto"></p-columnFilter>
+                                            <p-columnFilter *ngIf="currentColumn.dataType == 'date'"
+                                                            type="{{ currentColumn.dataType }}"
+                                                            field="{{ currentColumn.dataField }}" display="menu"
+                                                            class="ml-auto"></p-columnFilter>
+                                            <p-columnFilter *ngIf="currentColumn.dataType == 'combobox'"
+                                                            field="{{ currentColumn.dataField }}" matchMode="equals"
+                                                            [showMenu]="false">
+                                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                                    <p-dropdown [ngModel]="value" [options]="currentColumn.filterData"
+                                                                (onChange)="filter($event.value)" placeholder="Any"
+                                                                [showClear]="true">
+                                                        <ng-template let-option pTemplate="item">
+                                                            <span>{{ option }}</span>
+                                                        </ng-template>
+                                                    </p-dropdown>
+                                                </ng-template>
+                                            </p-columnFilter>
+                                            <p-columnFilter *ngIf="currentColumn.dataType == 'comboboxMulti'"
+                                                            field="{{ currentColumn.dataField }}" matchMode="in"
+                                                            [showMenu]="false">
+                                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                                    <p-multiSelect [ngModel]="value"
+                                                                   [options]="currentColumn.filterData"
+                                                                   (onChange)="filter($event.value)" placeholder="Any"
+                                                                   [showClear]="true">
+                                                        <ng-template let-option pTemplate="item">
+                                                            <span>{{ option }}</span>
+                                                        </ng-template>
+                                                    </p-multiSelect>
+                                                </ng-template>
+                                            </p-columnFilter>
+                                        </ng-container>
+                                    </div>
+                                </th>
+                                <th style='flex: 0 0 160px;'>
+                                    <div class="flex justify-content-between align-items-center">
+                                        {{ "Actions" | localize }}
+                                    </div>
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-product>
+                            <tr>
+                                <td *ngIf="dataGridOptions.selectionEnabled">
+                                    <p-tableCheckbox [value]="product"
+                                                     *ngIf="dataGridOptions.selection == 'multi'"></p-tableCheckbox>
+                                    <p-tableRadioButton *ngIf="dataGridOptions.selection == 'single'"
+                                                        [value]="product"></p-tableRadioButton>
+                                </td>
+                                <td *ngFor="let currentColumn of dataGridOptions.columns">
+
+                                    <p *ngIf="currentColumn.dataType == 'date'">
+                                        {{
+                                        product[currentColumn.dataField]
+                                            | date: currentColumn.displayFormat
+                                        }}
+                                    </p>
+                                    <p *ngIf="currentColumn.dataType != 'date'">
+                                        {{ fetchFromObject(product, currentColumn.dataField) }}
+                                    </p>
+                                </td>
+                                <td style='flex: 0 0 160px;'>
+
+                                    <button
+                                            *ngIf="dataGridOptions.createButtonIsHidden == false"
+                                            [disabled]="dataGridOptions.createButtonIsActive == false || isGranted(dataGridOptions.createPermissionName) == false"
+                                            pButton
+                                            pRipple
+                                            icon="pi pi-pencil"
+                                            class="p-button-rounded p-button-success p-mr-2"
+                                            pTooltip="{{ 'Edit' | localize}}"
+                                            tooltipPosition="bottom"
+                                            (click)="openUpdate(product)"
+                                    ></button>
+                                    <button
+                                            *ngIf="dataGridOptions.createButtonIsHidden == false"
+                                            [disabled]="dataGridOptions.createButtonIsActive == false || isGranted(dataGridOptions.createPermissionName) == false"
+                                            pButton
+                                            pRipple
+                                            icon="pi pi-trash"
+                                            class="p-button-rounded p-button-warning"
+                                            pTooltip="{{ 'Delete' | localize}}"
+                                            tooltipPosition="bottom"
+                                            (click)="openDelete(product.id)"
+                                    ></button>
+                                    <button
+                                            *ngFor="let currentAction of actionOps"
+                                            pButton
+                                            pRipple
+                                            pTooltip="{{ currentAction.hint | localize}}"
+                                            tooltipPosition="bottom"
+                                            icon="{{ currentAction.icon }}"
+                                            class="{{ currentAction.class }}"
+                                            (click)="currentAction.callback(product)"
+                                    ></button>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage" let-columns>
+                            <tr>
+                                <td [attr.colspan]="columns?.length">
+                                    <div style="text-align: center; width: 100%">{{ "NoRecordsFound" | localize}}</div>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+                <div class="card-footer table-card-footer bg-light border-top"></div>
+            </div>
+        </div>
+    </section>
+</div>

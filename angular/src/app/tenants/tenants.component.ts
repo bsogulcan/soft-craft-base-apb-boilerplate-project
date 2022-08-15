@@ -13,6 +13,7 @@ import {
 } from '@shared/service-proxies/service-proxies';
 import { CreateTenantDialogComponent } from './create-tenant/create-tenant-dialog.component';
 import { EditTenantDialogComponent } from './edit-tenant/edit-tenant-dialog.component';
+import {Title} from '@angular/platform-browser';
 
 class PagedTenantsRequestDto extends PagedRequestDto {
   keyword: string;
@@ -32,9 +33,11 @@ export class TenantsComponent extends PagedListingComponentBase<TenantDto> {
   constructor(
     injector: Injector,
     private _tenantService: TenantServiceProxy,
-    private _modalService: BsModalService
+    private _modalService: BsModalService,
+    private titleService: Title,
   ) {
     super(injector);
+    titleService.setTitle(this.l('Tenants'));
   }
 
   list(

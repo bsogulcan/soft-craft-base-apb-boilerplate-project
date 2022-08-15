@@ -13,6 +13,7 @@ import {
 } from '@shared/service-proxies/service-proxies';
 import { CreateRoleDialogComponent } from './create-role/create-role-dialog.component';
 import { EditRoleDialogComponent } from './edit-role/edit-role-dialog.component';
+import {Title} from '@angular/platform-browser';
 
 class PagedRolesRequestDto extends PagedRequestDto {
   keyword: string;
@@ -29,9 +30,11 @@ export class RolesComponent extends PagedListingComponentBase<RoleDto> {
   constructor(
     injector: Injector,
     private _rolesService: RoleServiceProxy,
-    private _modalService: BsModalService
+    private _modalService: BsModalService,
+    private titleService: Title,
   ) {
     super(injector);
+    titleService.setTitle(this.l('Roles'));
   }
 
   list(

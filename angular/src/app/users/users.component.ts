@@ -14,6 +14,7 @@ import {
 import { CreateUserDialogComponent } from './create-user/create-user-dialog.component';
 import { EditUserDialogComponent } from './edit-user/edit-user-dialog.component';
 import { ResetPasswordDialogComponent } from './reset-password/reset-password.component';
+import {Title} from '@angular/platform-browser';
 
 class PagedUsersRequestDto extends PagedRequestDto {
   keyword: string;
@@ -33,9 +34,11 @@ export class UsersComponent extends PagedListingComponentBase<UserDto> {
   constructor(
     injector: Injector,
     private _userService: UserServiceProxy,
-    private _modalService: BsModalService
+    private _modalService: BsModalService,
+    private titleService: Title,
   ) {
     super(injector);
+    titleService.setTitle(this.l('Users'));
   }
 
   createUser(): void {

@@ -36,7 +36,8 @@ export class DataGridComponent extends AppComponentBase implements OnInit {
     ngOnInit() {
         this.dataGridOptions = this.dataGridOptionInput;
         this._crudService = this.crudService;
-        this.doRefresh();
+		//No need to fetch datas on initialize component. Each component allready fetch datas before initialize gridComponent
+		//this.doRefresh();
     }
 
     openCreate() {

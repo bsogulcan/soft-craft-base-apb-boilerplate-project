@@ -181,14 +181,20 @@ export class DataGridComponent extends AppComponentBase implements OnInit {
         FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
     }
 
-    fetchFromObject(obj, prop) {
+    fetchFromObject(obj, prop, isDate = false) {
         if (typeof obj === 'undefined') {
             return 'NULL';
         }
         let _index = prop.indexOf('.');
         if (_index > -1) {
-            return this.fetchFromObject(obj[prop.substring(0, _index)], prop.substr(_index + 1));
+            return this.fetchFromObject(obj[prop.substring(0, _index)], prop.substr(_index + 1), isDate);
         }
+
+        if (isDate && obj[prop] && typeof (obj[prop]) == 'string' && !isNaN(Date.parse(obj[prop]))) {
+            obj[prop] = new Date(obj[prop]);
+            return new Date(obj[prop]);
+        }
+
         return obj[prop];
     }
 }

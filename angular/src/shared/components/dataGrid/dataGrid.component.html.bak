@@ -258,7 +258,7 @@
       <td *ngFor="let currentColumn of dataGridOptions.columns">
 		<p *ngIf="currentColumn.dataType == 'date'">
           {{
-            fetchFromObject(product, currentColumn.dataField, true) | date: currentColumn.format
+            fetchFromObject(product, currentColumn.dataField) | date: currentColumn.displayFormat
           }}
         </p>
         <p *ngIf="currentColumn.dataType != 'date'">

@@ -31,7 +31,7 @@ export class GridColumn {
     this.dataType = dataType;
     this.allowEditing = allowEditing;
     this.sortOrder = sortOrder == null ? "" : sortOrder;
-    this.format = format == null ? "" : format;
+    this.format = format == null ? "short" : format;
     this.width = width == null ? "100%" : width;
     this.alignment = alignment == null ? "" : alignment;
     this.setHidden = setHidden,
